@@ -2,6 +2,13 @@ from pydot import Dot, Edge, Node, Graph, Cluster
 from typing import TypeVar
 T = TypeVar("T")
 
+_pydoto_counter_ = 0
+def new_name() -> str:
+  global _pydoto_counter_
+  name = f"p{_pydoto_counter_}"
+  _pydoto_counter_ += 1
+  return name
+
 def safe_set(args: dict, key: str, value):
   if key not in args: args[key] = value
 
@@ -15,15 +22,17 @@ class CDot(Dot):
 
 # Connectable Cluster
 class CCluster(Cluster):
-  def __init__(self, name, **args):
+  def __init__(self, name=None, **args):
+    if name==None: name=new_name()
     safe_set(args, "label", name)
     Cluster.__init__(self, name, **args)
     self._connect_node_ = addNode(
-      self, "_connect_node_", label="", shape="none", width=0, height=0, margin=0)
+      self, f"connect_node_{name}" ,label="", shape="none", width=0, height=0, margin=0)
 
-def addNode(g: Graph|CCluster, name, **args):
+def addNode(g: Graph|CCluster, name=None, **args):
+  if name==None: name=new_name()
   safe_set(args, "label", name)
-  n = Node(g.get_name()+name, **args)
+  n = Node(name, **args)
   g.add_node(n)
   return n
 
@@ -39,7 +48,8 @@ def addEdge(g: Graph, n1: Node|CCluster, n2: Node|CCluster, **args):
   else: r = n2
   g.add_edge(Edge(l.get_name(), r.get_name(), **args))
 
-def addCCluster(g: Graph|CCluster, name, **args):
+def addCCluster(g: Graph|CCluster, name=None, **args):
+  if name==None: name=new_name()
   s=CCluster(name, **args)
   g.add_subgraph(s)
   return s
