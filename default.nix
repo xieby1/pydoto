@@ -1,8 +1,8 @@
-{ lib
-, buildPythonPackage
-, pydot
-}: buildPythonPackage {
+{ pkgs ? import <nixpkgs> {} }:
+pkgs.python3Packages.buildPythonPackage {
   name = "pydoto";
-  src = lib.sourceByRegex ./. [".*\.py$"];
-  propagatedBuildInputs = [ pydot ];
+  src = pkgs.lib.sourceByRegex ./. [".*\.py$"];
+  propagatedBuildInputs = [
+    pkgs.python3Packages.pydot
+  ];
 }

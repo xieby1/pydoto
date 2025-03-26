@@ -3,7 +3,7 @@ let
 in pkgs.mkShell {
   name = "test-pydoto";
   packages = [
-    (pkgs.python3Packages.callPackage ./. {})
+    (import ./. { inherit pkgs; })
     pkgs.graphviz
   ];
 }
